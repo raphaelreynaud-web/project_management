@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Projet {
+  id Int @id @default(autoincrement())
+  name String
+  created_at DateTime @default(now())
+  description String @db.VarChar(250)
+  groupes Groupe[]
+}
+
+model Groupe {
+  id Int @id @default(autoincrement())
+  name String
+  project_id Int
+  created_at DateTime @default(now())
+  project Projet @relation(fields: [project_id], references: [id])
+  todos Todo[]
+}
+
+model Todo {
+  id Int @id @default(autoincrement())
+  name String
+  groupe_id Int
+  created_at DateTime @default(now())
+  start_date DateTime @default(now())
+  end_date DateTime @default(now())
+  statut String
+  groupe Groupe @relation(fields: [groupe_id], references: [id])
+}
