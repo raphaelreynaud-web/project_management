@@ -154,7 +154,7 @@ router.post('/updategroupename', async (req,res) => {
     res.status(200).send("Groupe name updated")
 })
 // Delete routes
-router.get('/deletetodo', async (req,res) => {
+router.post('/deletetodo', async (req,res) => {
     const todo = await prisma.todo.delete({
         where : {
             id : req.body.id
@@ -162,7 +162,7 @@ router.get('/deletetodo', async (req,res) => {
     })
     res.status(200).send("Todo deleted")
 })
-router.get('/deletegroupe', async (req,res) => {
+router.post('/deletegroupe', async (req,res) => {
     const groupe = await prisma.groupe.delete({
         where : {
             id : req.body.id
@@ -170,7 +170,7 @@ router.get('/deletegroupe', async (req,res) => {
     })
     res.status(200).send("Groupe deleted")
 })
-router.get('/deleteproject', async (req,res) => {
+router.post('/deleteproject', async (req,res) => {
     const project = await prisma.projet.delete({
         where : {
             id : req.body.id

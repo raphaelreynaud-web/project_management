@@ -13,12 +13,13 @@
                 <thead>
                 <th>
                     <div class="text-green-400 flex mt-6 mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mt-1.5 bi bi-arrow-down-circle" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"/>
-                    </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mt-1.5 bi bi-arrow-down-circle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"/>
+                        </svg>
                         <form @submit.prevent="updateGroupeName(groupe.id)">
                             <input v-bind:id="'groupe-'+groupe.id" class="ml-2 text-xl bg-transparent" type="text" v-bind:value="groupe.name" />
                         </form>
+                        <div @click="deleteGroupe(groupe.id)">X</div>
                     </div>
                 </th>
                 <th class="text-gray-400 pt-4">Statut</th>
@@ -26,10 +27,11 @@
                 </thead>
                 <tbody>
                 <tr v-if="groupe.todos !== null" v-for="todo in groupe.todos" :key="todo.id" class="text-white bg-gray-800 hover:bg-gray-600 ">
-                    <td class="p-2 w-4/6 border text-xs">
-                      <form @submit.prevent="updateTodoName(todo.id)">
+                    <td class="p-2 w-full h-11 border text-xs flex items-center">
+                      <form class="w-full" @submit.prevent="updateTodoName(todo.id)">
                             <input v-bind:id="'todo-'+todo.id" class="bg-transparent w-1/2" type="text" v-bind:value="todo.name" />
                       </form>
+                      <div @click="deleteTodo(todo.id, groupe.id)">X</div>
                     </td>
                     <td class="w-1/6 border text-xs text-center">
                         <select v-if="todo.statut === 'en_cours'" v-bind:id="'statut-'+todo.id" class="text-center bg-yellow-500 w-full h-10" @change="updateStatut(todo.id)">
@@ -49,7 +51,7 @@
                         </select>
                     </td>
                     <td class="p-2 w-1/6 border text-xs text-center">
-                    <p class="bg-blue-400 rounded-full p-1">Période</p>
+                    <p class="bg-blue-400 rounded-full p-1">{{todo.start_date.split("T")[0] + " - " + todo.end_date.split("T")[0]}}</p>
                     </td>
                 </tr>
                 </tbody>
@@ -65,6 +67,7 @@
 
 <script>
 import axios from "axios"
+import moment from "moment"
 export default {
     props : {
         id : String
@@ -92,12 +95,30 @@ export default {
             }
         })
     },
+    filters : {
+        moment : function(date){
+            return moment(date, "DD-MM-YYYY")
+        }
+    },
     methods : {
         createGroupe : function () {
             axios.post("/api/creategroupe", {
                 name : "Nouveau Groupe",
                 project_id : this.project_id
             })
+            axios.get("/api/project/"+this.project_id).then(res => {
+            console.log(res.data)
+            this.name = res.data[0].name;
+            this.description = res.data[0].description;
+            if (res.data[0].groupes === null) {
+                this.groupes = false
+            }
+            else {
+                this.groupes = res.data[0].groupes
+                console.log(this.groupes)
+            }
+        })
+
         },
         createTodo : function (gid) {
             axios.post("/api/createtodo", {
@@ -105,6 +126,18 @@ export default {
                 groupe_id : gid,
                 statut : "bloqué"
             })
+            axios.get("/api/project/"+this.project_id).then(res => {
+            console.log(res.data)
+            this.name = res.data[0].name;
+            this.description = res.data[0].description;
+            if (res.data[0].groupes === null) {
+                this.groupes = false
+            }
+            else {
+                this.groupes = res.data[0].groupes
+                console.log(this.groupes)
+            }
+        })
         },
         updateProjectName : function(){
             axios.post("/api/updateprojectname", {
@@ -154,6 +187,19 @@ export default {
                 statut.classList.remove("bg-yellow-500")
                 statut.classList.add("bg-green-500")
             }
+        },
+        deleteTodo : function (tid, gid){
+            axios.post("/api/deletetodo", {
+                id : tid
+            })
+            var objIndex = this.groupes.findIndex(obj => obj.id == gid)
+            this.groupes[objIndex].todos = this.groupes[objIndex].todos.filter(todo => todo.id !== tid)
+        },
+        deleteGroupe : function (gid){
+            axios.post("/api/deletegroupe", {
+                id : gid
+            })
+            this.groupes = this.groupes.filter(groupe => groupe.id !== gid)
         }
     }
 }
