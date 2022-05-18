@@ -27,7 +27,7 @@ router.get('/allprojects', async (req,res) => {
 router.get('/project/:id', async (req,res) => {
     const project = await prisma.projet.findMany({
         where : {
-            id : parseInt(req.params.id)
+            id : req.params.id
         },
         include : {
             groupes : {
@@ -38,6 +38,17 @@ router.get('/project/:id', async (req,res) => {
         }
     })
     res.status(200).json(project)
+})
+
+router.get("/projects/:name", async (req, res) => {
+    const projects = await prisma.projet.findMany({
+        where : {
+            name : {
+                contains : req.params.name
+            }
+        }
+    })
+    res.status(200).json(projects)
 })
 // Create routes
 router.post('/createproject', async (req,res) => {
@@ -54,7 +65,7 @@ router.post('/creategroupe', async (req,res) => {
     const groupe = await prisma.groupe.create({
         data : {
             name : req.body.name,
-            project_id : parseInt(req.body.project_id)
+            project_id : req.body.project_id
         }
     })
     res.status(200).send("Groupe created")
@@ -64,7 +75,7 @@ router.post('/createtodo', async (req,res) => {
     const Todo = await prisma.todo.create({
         data : {
             name : req.body.name,
-            groupe_id : parseInt(req.body.groupe_id),
+            groupe_id : req.body.groupe_id,
             statut : req.body.statut
         }
     })
@@ -75,7 +86,7 @@ router.post('/createtodo', async (req,res) => {
 router.post('/updatestatut', async (req,res) => {
     const statut = await prisma.todo.update({
         where : {
-            id : parseInt(req.body.id)
+            id : req.body.id
         },
         data : {
             statut : req.body.statut
@@ -87,7 +98,7 @@ router.post('/updatestatut', async (req,res) => {
 router.post('/updatestart', async (req,res) => {
     const start_date = await prisma.todo.update({
         where : {
-            id : parseInt(req.body.id)
+            id : req.body.id
         },
         data : {
             start_date : req.body.start_date
@@ -98,7 +109,7 @@ router.post('/updatestart', async (req,res) => {
 router.post('/updateend', async (req,res) => {
     const end_date = await prisma.todo.update({
         where : {
-            id : parseInt(req.body.id)
+            id : req.body.id
         },
         data : {
             end_date : req.body.end_date
@@ -109,7 +120,7 @@ router.post('/updateend', async (req,res) => {
 router.post('/updatedescription', async (req,res) => {
     const description = await prisma.projet.update({
         where : {
-            id : parseInt(req.body.id)
+            id : req.body.id
         },
         data : {
             description : req.body.description
@@ -121,7 +132,7 @@ router.post('/updatedescription', async (req,res) => {
 router.post('/updatetodoname', async (req,res) => {
     const todo = await prisma.todo.update({
         where : {
-            id : parseInt(req.body.id)
+            id : req.body.id
         },
         data : {
             name : req.body.name
@@ -133,7 +144,7 @@ router.post('/updatetodoname', async (req,res) => {
 router.post('/updateprojectname', async (req,res) => {
     const project = await prisma.projet.update({
         where : {
-            id : parseInt(req.body.id)
+            id : req.body.id
         },
         data : {
             name : req.body.name
@@ -145,7 +156,7 @@ router.post('/updateprojectname', async (req,res) => {
 router.post('/updategroupename', async (req,res) => {
     const groupe = await prisma.groupe.update({
         where : {
-            id : parseInt(req.body.id)
+            id : req.body.id
         },
         data : {
             name : req.body.name

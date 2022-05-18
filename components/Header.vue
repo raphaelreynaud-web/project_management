@@ -6,7 +6,7 @@
             <div class="rounded-l-xl p-3 text-white h-screen w-72 bg-gray-800 font-sans font-thin">
                 <div class="flex items-center">
                     <img width="100px" height="100px" src="https://res.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco,dpr_1/sbf423pagwh6fhfujbbw" />
-                    <h1>Gestion de projet</h1>
+                    <a href="/">Gestion de projet</a>
                 </div>
                 <hr class="mb-3 mt-3">
                 <div class="flex flex-col">
@@ -20,7 +20,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mt-1 bi bi-search" viewBox="0 0 16 16">
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                         </svg>
-                        <p class="pl-3">Rechercher</p>
+                        <input  type="text" placeholder="Rechercher" v-model="search" class="placeholder:text-white bg-transparent pl-3"/>
                     </a>
                 </div>
                 <hr class="mb-3">
@@ -45,6 +45,7 @@ export default {
     data(){
         return {
             projectlist : [],
+            search : ""
         }
     },
     mounted(){
@@ -53,9 +54,16 @@ export default {
         })
     },
     updated(){
-        axios.get("/api/projectlist").then(res => {
+        if (this.search === "") {
+            axios.get("/api/projectlist").then(res => {
             this.projectlist = res.data
         })
+        }
+        else {
+            axios.get("/api/projects/"+this.search).then(res => {
+                this.projectlist = res.data
+            })
+        }
     },
     methods: {
         createProject: async function (event) {

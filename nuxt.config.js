@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'project_management',
+    title: 'Project Management',
     htmlAttrs: {
       lang: 'en'
     },

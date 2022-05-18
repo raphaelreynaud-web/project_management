@@ -4,7 +4,7 @@
             <input v-model="name"  class="text-2xl bg-transparent"/> <br />
         </form>
         <form @submit.prevent="updateProjectDescription()">
-            <input v-model="description" class="text-sm bg-transparent"/>
+            <input v-model="description" class="w-3/12 text-sm bg-transparent"/>
         </form>
       <hr class="mt-3">
       <div v-if="groupes">
@@ -19,21 +19,21 @@
                         <form @submit.prevent="updateGroupeName(groupe.id)">
                             <input v-bind:id="'groupe-'+groupe.id" class="ml-2 text-xl bg-transparent" type="text" v-bind:value="groupe.name" />
                         </form>
-                        <div @click="deleteGroupe(groupe.id)">X</div>
+                        <div class="mt-1" @click="deleteGroupe(groupe.id)">X</div>
                     </div>
                 </th>
                 <th class="text-gray-400 pt-4">Statut</th>
                 <th class="text-gray-400 pt-4">Période</th>
                 </thead>
                 <tbody>
-                <tr v-if="groupe.todos !== null" v-for="todo in groupe.todos" :key="todo.id" class="text-white bg-gray-800 hover:bg-gray-600 ">
-                    <td class="p-2 w-full h-11 border text-xs flex items-center">
+                <tr v-if="groupe.todos !== null" v-for="todo in groupe.todos" :key="todo.id" class="border text-white bg-gray-800 hover:bg-gray-600 ">
+                    <td class="p-2 w-full h-11 text-xs flex items-center">
                       <form class="w-full" @submit.prevent="updateTodoName(todo.id)">
                             <input v-bind:id="'todo-'+todo.id" class="bg-transparent w-1/2" type="text" v-bind:value="todo.name" />
                       </form>
                       <div @click="deleteTodo(todo.id, groupe.id)">X</div>
                     </td>
-                    <td class="w-1/6 border text-xs text-center">
+                    <td class="w-1/6  text-xs text-center">
                         <select v-if="todo.statut === 'en_cours'" v-bind:id="'statut-'+todo.id" class="text-center bg-yellow-500 w-full h-10" @change="updateStatut(todo.id)">
                             <option selected value="en_cours" class="checked:bg-yellow-500 w-full h-18 bg-yellow-500">En cours</option>
                             <option value="bloqué" class="w-full h-10 bg-red-500">Bloqué</option>
@@ -50,13 +50,13 @@
                             <option selected value="fini" class="w-full h-10 bg-green-500">Fini</option>
                         </select>
                     </td>
-                    <td class="p-2 w-1/6 border text-xs text-center">
+                    <td class="p-2 w-1/6 text-xs text-center">
                     <p class="bg-blue-400 rounded-full p-1">{{todo.start_date.split("T")[0] + " - " + todo.end_date.split("T")[0]}}</p>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <div class="p-2 border w-full bg-transparent">
+            <div class="p-2 w-full bg-transparent">
                 <input v-model="todoname" v-on:keyup.enter="createTodo(groupe.id)" class="bg-transparent text-sm w-1/2" type="text" placeholder="+ ajouter une tâche">
             </div>
         </div>
@@ -137,6 +137,7 @@ export default {
                 this.groupes = res.data[0].groupes
                 console.log(this.groupes)
             }
+            this.todoname = ""
         })
         },
         updateProjectName : function(){
