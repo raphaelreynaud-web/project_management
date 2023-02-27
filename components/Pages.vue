@@ -57,7 +57,7 @@
                 </tbody>
             </table>
             <div class="p-2 w-full bg-transparent">
-                <input v-model="todoname" v-on:keyup.enter="createTodo(groupe.id)" class="bg-transparent text-sm w-1/2" type="text" placeholder="+ ajouter une tâche">
+                <input v-model="groupe.task" v-on:keyup.enter="createTodo(groupe.id, groupe.task)" class="bg-transparent text-sm w-1/2" type="text" placeholder="+ ajouter une tâche">
             </div>
         </div>
       </div>
@@ -120,9 +120,9 @@ export default {
         })
 
         },
-        createTodo : function (gid) {
+        createTodo : function (gid, name) {
             axios.post("/api/createtodo", {
-                name : this.todoname,
+                name : name,
                 groupe_id : gid,
                 statut : "bloqué"
             })
