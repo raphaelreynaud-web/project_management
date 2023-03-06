@@ -42,4 +42,5 @@ This project is not finished and need multiple other features like :
 1. Time starting and ending the task
 2. Charts for the progression of the task
 3. Automation
+
 I built this software scaled on my own needs but I want to improve it a lot by adding lot of different features.
