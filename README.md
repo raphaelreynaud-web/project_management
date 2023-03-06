@@ -31,6 +31,21 @@ project-management/
 ├─ static # static files
 ```
 
+## How to start the project
+1. You need to install the dependencies using :
+```
+npm install
+```
+2. Then you need to initialize Prisma using :
+```
+npx prisma generate
+npx prisma migrate dev
+```
+3. Then you can use the project using :
+```
+npm run dev
+```
+
 ## Project Features
 1. CRUD for projects
 2. CRUD for groups
