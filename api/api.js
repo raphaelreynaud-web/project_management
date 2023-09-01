@@ -101,18 +101,19 @@ router.post('/updatestart', async (req,res) => {
             id : req.body.id
         },
         data : {
-            start_date : req.body.start_date
+            start_date : req.body.start_date + "T20:45:01.432Z"
         }
     })
     res.status(200).send("Start date updated")
 })
+
 router.post('/updateend', async (req,res) => {
     const end_date = await prisma.todo.update({
         where : {
             id : req.body.id
         },
         data : {
-            end_date : req.body.end_date
+            end_date : req.body.end_date + "T20:45:01.432Z"
         }
     })
     res.status(200).send("End date updated")

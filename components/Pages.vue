@@ -51,7 +51,7 @@
                         </select>
                     </td>
                     <td class="p-2 w-1/6 text-xs text-center">
-                    <p class="bg-blue-400 rounded-full p-1">{{todo.start_date.split("T")[0] + " - " + todo.end_date.split("T")[0]}}</p>
+                        <div class="bg-blue-400 rounded-full p-1 text-black"><input type="date" v-model="todo.start_date" @change="updateStart($event, todo.id)"> - <input type="date" v-model="todo.end_date"></div>    
                     </td>
                 </tr>
                 </tbody>
@@ -90,6 +90,13 @@ export default {
                 this.groupes = false
             }
             else {
+                const mygroupes = res.data[0].groupes.map(groupe => {
+                    groupe.todos = groupe.todos.map(todo => {
+                        todo.start_date = moment(todo.start_date, "YYYY-MM-DD").format("YYYY-MM-DD")
+                        todo.end_date = moment(todo.end_date, "YYYY-MM-DD").format("YYYY-MM-DD")
+                        return todo
+                    })
+                })
                 this.groupes = res.data[0].groupes
                 console.log(this.groupes)
             }
@@ -107,17 +114,17 @@ export default {
                 project_id : this.project_id
             })
             axios.get("/api/project/"+this.project_id).then(res => {
-            console.log(res.data)
-            this.name = res.data[0].name;
-            this.description = res.data[0].description;
-            if (res.data[0].groupes === null) {
-                this.groupes = false
-            }
-            else {
-                this.groupes = res.data[0].groupes
-                console.log(this.groupes)
-            }
-        })
+                console.log(res.data)
+                this.name = res.data[0].name;
+                this.description = res.data[0].description;
+                if (res.data[0].groupes === null) {
+                    this.groupes = false
+                }
+                else {
+                    this.groupes = res.data[0].groupes
+                    console.log(this.groupes)
+                }
+            })
 
         },
         createTodo : function (gid, name) {
@@ -127,18 +134,18 @@ export default {
                 statut : "bloqué"
             })
             axios.get("/api/project/"+this.project_id).then(res => {
-            console.log(res.data)
-            this.name = res.data[0].name;
-            this.description = res.data[0].description;
-            if (res.data[0].groupes === null) {
-                this.groupes = false
-            }
-            else {
-                this.groupes = res.data[0].groupes
-                console.log(this.groupes)
-            }
-            this.todoname = ""
-        })
+                console.log(res.data)
+                this.name = res.data[0].name;
+                this.description = res.data[0].description;
+                if (res.data[0].groupes === null) {
+                    this.groupes = false
+                }
+                else {
+                    this.groupes = res.data[0].groupes
+                    console.log(this.groupes)
+                }
+                this.todoname = ""
+            })
         },
         updateProjectName : function(){
             axios.post("/api/updateprojectname", {
@@ -188,6 +195,18 @@ export default {
                 statut.classList.remove("bg-yellow-500")
                 statut.classList.add("bg-green-500")
             }
+        },
+        updateStart : function (e, tid){
+            axios.post("/api/updatestart", {
+                id : tid,
+                start_date : e.target.value
+            })
+        },
+        updateEnd : function (e,tid){
+            axios.post("/api/updateend", {
+                id : tid,
+                end_date : end.value
+            })
         },
         deleteTodo : function (tid, gid){
             axios.post("/api/deletetodo", {

@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root@localhost:3306/projects"
+  url = "mysql://root:coucou@db_project:3306/projects"
 }
 
 model Projet {
@@ -32,8 +32,8 @@ model Todo {
   name String
   groupe_id String
   created_at DateTime @default(now())
-  start_date DateTime @default(now())
-  end_date DateTime @default(now())
+  start_date DateTime @db.Date()
+  end_date DateTime @db.Date()
   statut String
   groupe Groupe @relation(fields: [groupe_id], references: [id])
 }
