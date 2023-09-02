@@ -130,16 +130,17 @@ export default {
         }
     },
     methods : {
-        ...mapMutations(['setActualProject', 'updateProjectName', 'deleteTodoFromProject']),
+        ...mapMutations(['setActualProject', 'updateProjectName', 'deleteTodoFromProject', 'setProjectList']),
         createGroupe : function () {
             axios.post("/api/creategroupe", {
                 name : "Nouveau Groupe",
                 project_id : this.project_id
+            }).then(res => {
+                axios.get("/api/project/"+this.project_id).then(res => {
+                    this.setActualProject(res.data[0])
+                    this.todoname = ""
+                })
             })
-            axios.get("/api/project/"+this.project_id).then(res => {
-                this.setActualProject(res.data[0])
-            })
-
         },
         createTodo : function (gid, name) {
             axios.post("/api/createtodo", {
@@ -159,6 +160,10 @@ export default {
             axios.post("/api/updateprojectname", {
                 id : this.project_id,
                 name : this.name
+            }).then(res => {
+                axios.get("/api/projectlist").then(res => {
+                    this.setProjectList(res.data)
+                })
             })
         },
         updateProjectDescription : function(){
@@ -229,6 +234,11 @@ export default {
         deleteGroupe : function (gid){
             axios.post("/api/deletegroupe", {
                 id : gid
+            }).then(res => {
+                axios.get("/api/project/"+this.project_id).then(res => {
+                    this.setActualProject(res.data[0])
+                    this.todoname = ""
+                })
             })
         }
     }

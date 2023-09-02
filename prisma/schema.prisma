@@ -23,7 +23,7 @@ model Groupe {
   name String
   project_id String
   created_at DateTime @default(now())
-  project Projet @relation(fields: [project_id], references: [id])
+  project Projet @relation(fields: [project_id], references: [id], onDelete: Cascade)
   todos Todo[]
 }
 
@@ -35,5 +35,5 @@ model Todo {
   start_date DateTime @default(now())
   end_date DateTime @default(now())
   statut String
-  groupe Groupe @relation(fields: [groupe_id], references: [id])
+  groupe Groupe @relation(fields: [groupe_id], references: [id], onDelete: Cascade)
 }
