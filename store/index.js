@@ -13,5 +13,5 @@ export const mutations = {
     },
     updateProjectName(state, name) {
         state.actualProject = {...state.actualProject, name : name}
-    }
+    },
 }

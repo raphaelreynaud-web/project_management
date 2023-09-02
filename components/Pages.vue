@@ -51,7 +51,7 @@
                         </select>
                     </td>
                     <td class="p-2 w-1/6 text-xs text-center">
-                        <div class="bg-blue-400 rounded-full p-1 text-black"><input type="date" v-bind:value="todo.start_date" @change="updateStart($event, todo.id)"> - <input type="date" v-bind:value="todo.end_date"></div>    
+                        <div class="bg-blue-400 rounded-full p-1 text-black"><input type="date" v-bind:value="todo.start_date" @change="updateStart($event, todo.id)"> - <input type="date" v-bind:value="todo.end_date" @change="updateEnd($event, todo.id)"></div>    
                     </td>
                 </tr>
                 </tbody>
@@ -130,7 +130,7 @@ export default {
         }
     },
     methods : {
-        ...mapMutations(['setActualProject', 'updateProjectName']),
+        ...mapMutations(['setActualProject', 'updateProjectName', 'deleteTodoFromProject']),
         createGroupe : function () {
             axios.post("/api/creategroupe", {
                 name : "Nouveau Groupe",
@@ -148,10 +148,11 @@ export default {
                 statut : "bloqué",
                 start_date : moment().format("DD-MM-YYYY"),
                 end_date : moment().format("DD-MM-YYYY")
-            })
-            axios.get("/api/project/"+this.project_id).then(res => {
-                this.setActualProject(res.data[0])
-                this.todoname = ""
+            }) .then(res => {
+                axios.get("/api/project/"+this.project_id).then(res => {
+                    this.setActualProject(res.data[0])
+                    this.todoname = ""
+                })
             })
         },
         updateProjectName : function(){
@@ -212,21 +213,23 @@ export default {
         updateEnd : function (e,tid){
             axios.post("/api/updateend", {
                 id : tid,
-                end_date : end.value
+                end_date : e.target.value
             })
         },
         deleteTodo : function (tid, gid){
             axios.post("/api/deletetodo", {
                 id : tid
+            }).then(res => {
+                axios.get("/api/project/"+this.project_id).then(res => {
+                    this.setActualProject(res.data[0])
+                    this.todoname = ""
+                })
             })
-            var objIndex = this.groupes.findIndex(obj => obj.id == gid)
-            this.groupes[objIndex].todos = this.groupes[objIndex].todos.filter(todo => todo.id !== tid)
         },
         deleteGroupe : function (gid){
             axios.post("/api/deletegroupe", {
                 id : gid
             })
-            this.groupes = this.groupes.filter(groupe => groupe.id !== gid)
         }
     }
 }
