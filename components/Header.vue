@@ -46,31 +46,39 @@
 
 <script>
 import axios from "axios"
+import {mapState, mapMutations} from "vuex"
 export default {
     data(){
         return {
-            projectlist : [],
             search : ""
         }
     },
+    computed : {
+        ...mapState({
+            projectlist : state => state.projectlist
+        })
+    },
     mounted(){
         axios.get("/api/projectlist").then(res => {
-            this.projectlist = res.data
+            this.setProjectList(res.data)
         })
     },
     updated(){
         if (this.search === "") {
             axios.get("/api/projectlist").then(res => {
-            this.projectlist = res.data
+                this.setProjectList(res.data)
         })
         }
         else {
             axios.get("/api/projects/"+this.search).then(res => {
-                this.projectlist = res.data
+                setProjectList(res.data)
             })
         }
     },
     methods: {
+        ...mapMutations({
+            setProjectList : "setProjectList"
+        }),
         createProject: async function (event) {
             event.preventDefault();
             const req = await axios.post("api/createproject", {

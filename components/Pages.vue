@@ -51,13 +51,13 @@
                         </select>
                     </td>
                     <td class="p-2 w-1/6 text-xs text-center">
-                        <div class="bg-blue-400 rounded-full p-1 text-black"><input type="date" v-model="todo.start_date" @change="updateStart($event, todo.id)"> - <input type="date" v-model="todo.end_date"></div>    
+                        <div class="bg-blue-400 rounded-full p-1 text-black"><input type="date" v-bind:value="todo.start_date" @change="updateStart($event, todo.id)"> - <input type="date" v-bind:value="todo.end_date"></div>    
                     </td>
                 </tr>
                 </tbody>
             </table>
             <div class="p-2 w-full bg-transparent">
-                <input v-model="groupe.task" v-on:keyup.enter="createTodo(groupe.id, groupe.task)" class="bg-transparent text-sm w-1/2" type="text" placeholder="+ ajouter une tâche">
+                <input v-model="todoname" v-on:keyup.enter="createTodo(groupe.id, todoname)" class="bg-transparent text-sm w-1/2" type="text" placeholder="+ ajouter une tâche">
             </div>
         </div>
       </div>
@@ -68,38 +68,60 @@
 <script>
 import axios from "axios"
 import moment from "moment"
+import {mapState, mapMutations} from "vuex"
+
 export default {
     props : {
         id : String
     },
     data(){
         return {
-            name : "",
-            description : "",
-            groupes : [],
             project_id : this.id,
             todoname : "",
         }
     },
+    computed: {
+        ...mapState({
+            actualProject: state => state.actualProject
+        }),
+        name: {
+            get() {
+                return this.actualProject.name
+            },
+            set(value) {
+                const updatedProject = { ...this.actualProject, name: value }
+                this.$store.commit('setActualProject', updatedProject)
+            }
+        },
+        description: {
+            get() {
+            return this.actualProject.description
+            },
+            set(value) {
+            const updatedProject = { ...this.actualProject, description: value }
+            this.$store.commit('setActualProject', updatedProject)
+            }
+        },
+        groupes: {
+            get() {
+                return this.actualProject.groupes
+            },
+            set(value) {
+                const updatedProject = { ...this.actualProject, groupes: value }
+                this.$store.commit('setActualProject', updatedProject)
+            }
+        },
+    },
     mounted(){
         axios.get("/api/project/"+this.project_id).then(res => {
-            console.log(res.data)
-            this.name = res.data[0].name;
-            this.description = res.data[0].description;
-            if (res.data[0].groupes === null) {
-                this.groupes = false
-            }
-            else {
-                const mygroupes = res.data[0].groupes.map(groupe => {
-                    groupe.todos = groupe.todos.map(todo => {
-                        todo.start_date = moment(todo.start_date, "YYYY-MM-DD").format("YYYY-MM-DD")
-                        todo.end_date = moment(todo.end_date, "YYYY-MM-DD").format("YYYY-MM-DD")
-                        return todo
-                    })
+            var actualProject = res.data[0]
+            actualProject.groupes.map(groupe => {
+                groupe.todos.map(todo => {
+                    todo.start_date = moment(todo.start_date, "YYYY-MM-DD").format("YYYY-MM-DD")
+                    todo.end_date = moment(todo.end_date, "YYYY-MM-DD").format("YYYY-MM-DD")
                 })
-                this.groupes = res.data[0].groupes
-                console.log(this.groupes)
-            }
+            })
+            this.setActualProject(res.data[0])
         })
     },
     filters : {
@@ -108,22 +130,14 @@ export default {
         }
     },
     methods : {
+        ...mapMutations(['setActualProject', 'updateProjectName']),
         createGroupe : function () {
             axios.post("/api/creategroupe", {
                 name : "Nouveau Groupe",
                 project_id : this.project_id
             })
             axios.get("/api/project/"+this.project_id).then(res => {
-                console.log(res.data)
-                this.name = res.data[0].name;
-                this.description = res.data[0].description;
-                if (res.data[0].groupes === null) {
-                    this.groupes = false
-                }
-                else {
-                    this.groupes = res.data[0].groupes
-                    console.log(this.groupes)
-                }
+                this.setActualProject(res.data[0])
             })
 
         },
@@ -131,19 +145,12 @@ export default {
             axios.post("/api/createtodo", {
                 name : name,
                 groupe_id : gid,
-                statut : "bloqué"
+                statut : "bloqué",
+                start_date : moment().format("DD-MM-YYYY"),
+                end_date : moment().format("DD-MM-YYYY")
             })
             axios.get("/api/project/"+this.project_id).then(res => {
-                console.log(res.data)
-                this.name = res.data[0].name;
-                this.description = res.data[0].description;
-                if (res.data[0].groupes === null) {
-                    this.groupes = false
-                }
-                else {
-                    this.groupes = res.data[0].groupes
-                    console.log(this.groupes)
-                }
+                this.setActualProject(res.data[0])
                 this.todoname = ""
             })
         },

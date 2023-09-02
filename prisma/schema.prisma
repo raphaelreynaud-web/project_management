@@ -32,8 +32,8 @@ model Todo {
   name String
   groupe_id String
   created_at DateTime @default(now())
-  start_date DateTime @db.Date()
-  end_date DateTime @db.Date()
+  start_date DateTime @default(now())
+  end_date DateTime @default(now())
   statut String
   groupe Groupe @relation(fields: [groupe_id], references: [id])
 }

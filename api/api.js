@@ -1,5 +1,6 @@
 const {Router} = require("express")
 const router = Router()
+const moment = require('moment')
 
 const { PrismaClient } = require('@prisma/client')
 
@@ -76,7 +77,9 @@ router.post('/createtodo', async (req,res) => {
         data : {
             name : req.body.name,
             groupe_id : req.body.groupe_id,
-            statut : req.body.statut
+            statut : req.body.statut,
+            start_date : moment().format("YYYY-MM-DD") + "T20:45:01.432Z",
+            end_date : moment().format("YYYY-MM-DD") + "T20:45:01.432Z"
         }
     })
     res.status(200).send("Todo created")
